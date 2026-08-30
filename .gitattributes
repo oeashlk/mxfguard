@@ -1,0 +1,19 @@
+# Нормалізація кінців рядків не залежить від налаштувань машини.
+# Батники мусять лягати на диск із CRLF: cmd.exe спотикається на LF
+# у багаторядкових конструкціях, і це відмовляє мовчки.
+* text=auto
+
+*.cmd    text eol=crlf
+*.bat    text eol=crlf
+*.ps1    text eol=crlf
+*.txt    text eol=crlf
+
+*.py     text eol=lf
+*.md     text eol=lf
+*.html   text eol=lf
+
+*.whl    binary
+*.exe    binary
+*.pyd    binary
+*.dll    binary
+*.png    binary

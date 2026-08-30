@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="uk"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>mxfguard — звіт переносу</title>
+<style>
+:root{color-scheme:light dark;--bg:#fbfbf9;--fg:#1a1a18;--mut:#6b6b63;--line:#e2e2db;
+--card:#fff;--ok:#2f7d4f;--warn:#a8791a;--err:#c0453a;--crit:#8f2119;--accent:#4a5fd0}
+@media(prefers-color-scheme:dark){:root{--bg:#16161a;--fg:#e8e8e4;--mut:#9a9a92;
+--line:#2e2e35;--card:#1e1e24;--ok:#5fbf85;--warn:#d9a83f;--err:#e8695c;--crit:#ff8a7a;--accent:#8b9bf0}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);
+font:14px/1.55 ui-sans-serif,system-ui,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:1500px;margin:0 auto;padding:28px 20px 80px}
+h1{font-size:22px;margin:0 0 4px}.sub{color:var(--mut);font-size:13px;margin-bottom:24px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:22px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;cursor:pointer}
+.tile:hover{border-color:var(--accent)}.tile.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.tile .n{font-size:24px;font-weight:600;font-variant-numeric:tabular-nums}
+.tile .l{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.04em;margin-top:2px}
+.bar{display:flex;height:8px;border-radius:4px;overflow:hidden;margin-bottom:22px;background:var(--line)}
+.bar i{display:block}
+.ctl{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+input[type=search]{flex:1;min-width:220px;padding:8px 11px;border:1px solid var(--line);
+border-radius:8px;background:var(--card);color:var(--fg);font:inherit}
+button{padding:7px 12px;border:1px solid var(--line);border-radius:8px;background:var(--card);
+color:var(--fg);font:inherit;cursor:pointer}button:hover{border-color:var(--accent)}
+.tblwrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--card)}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{position:sticky;top:0;background:var(--card);font-size:11px;text-transform:uppercase;
+letter-spacing:.04em;color:var(--mut);cursor:pointer;white-space:nowrap}
+td.p{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;word-break:break-all;max-width:520px}
+td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.pill{display:inline-block;padding:1px 7px;border-radius:999px;font-size:11px;font-weight:600;white-space:nowrap}
+.s0{background:color-mix(in srgb,var(--ok) 18%,transparent);color:var(--ok)}
+.s1{background:color-mix(in srgb,var(--warn) 20%,transparent);color:var(--warn)}
+.s2{background:color-mix(in srgb,var(--err) 18%,transparent);color:var(--err)}
+.s3{background:color-mix(in srgb,var(--crit) 22%,transparent);color:var(--crit)}
+.note{color:var(--mut);font-size:12px;max-width:420px}
+.legend{margin-top:26px;font-size:12.5px;color:var(--mut)}
+.legend b{color:var(--fg)}.legend li{margin-bottom:3px}
+.more{text-align:center;padding:14px}
+</style></head><body><div class="wrap">
+<h1>mxfguard — звіт переносу даних</h1>
+<div class="sub">Джерело маніфесту: dst.csv · звірка: diff.csv · файлів: 12 · потребують уваги: 8 · сформовано 2026-08-30 13:01</div>
+<div class="bar" id="bar"></div>
+<div class="tiles" id="tiles"></div>
+<div class="ctl">
+  <input type="search" id="q" placeholder="фільтр за шляхом, статусом або приміткою…">
+  <button id="clear">Скинути фільтри</button>
+  <button id="csv">Експорт видимого в CSV</button>
+</div>
+<div class="tblwrap"><table id="t"><thead><tr>
+<th data-k="rel">Шлях</th><th data-k="size" class="num">Розмір</th>
+<th data-k="status">Контент</th><th data-k="transfer">Перенос</th>
+<th data-k="ent_head" class="num">Ент. голови</th><th data-k="ent_mid" class="num">Ент. тіла</th>
+<th data-k="struct">Структура</th><th data-k="decode">Декод</th>
+<th data-k="notes">Примітка</th></tr></thead><tbody id="tb"></tbody></table>
+<div class="more" id="more"></div></div>
+<div class="legend"><b>Що означають статуси</b><ul id="lg"></ul></div>
+</div>
+<script id="data" type="application/json">{"rows": [{"rel": "HOW_TO_DECRYPT_FILES.txt", "size": 42, "status": "RANSOM_NAME", "transfer": "OK", "ent_head": "4.231", "ent_mid": "4.231", "struct": "", "decode": "", "notes": "", "worst": "RANSOM_NAME"}, {"rel": "media/studio_truncated.mxf", "size": 5111641, "status": "DECODE_ERROR", "transfer": "OK", "ent_head": "7.387", "ent_mid": "7.47", "struct": "ok", "decode": "fail", "notes": "ffmpeg: Error while filtering: Invalid data found when processing input", "worst": "DECODE_ERROR"}, {"rel": "media/master_ok.mxf", "size": 9293893, "status": "OK", "transfer": "OK", "ent_head": "7.387", "ent_mid": "7.475", "struct": "ok", "decode": "ok", "notes": "", "worst": "OK"}, {"rel": "media/promo_full_enc.mxf", "size": 3000000, "status": "ENCRYPTED", "transfer": "OK", "ent_head": "8.0", "ent_mid": "8.0", "struct": "", "decode": "", "notes": "очікував 06 0e 2b 34, отримав d5 5b a3 d7 24 94 c7 c0 | також: BAD_MAGIC", "worst": "ENCRYPTED"}, {"rel": "docs/frame.png", "size": 6416, "status": "OK", "transfer": "OK", "ent_head": "7.886", "ent_mid": "7.886", "struct": "", "decode": "", "notes": "", "worst": "OK"}, {"rel": "docs/empty.wav", "size": 0, "status": "EMPTY_FILE", "transfer": "OK", "ent_head": null, "ent_mid": null, "struct": "", "decode": "", "notes": "", "worst": "EMPTY_FILE"}, {"rel": "docs/logo.jpg", "size": 21000, "status": "BAD_MAGIC", "transfer": "OK", "ent_head": "3.308", "ent_mid": "3.308", "struct": "", "decode": "", "notes": "очікував ff d8 ff, отримав d1 86 d0 b5 20 d0 bd d0", "worst": "BAD_MAGIC"}, {"rel": "docs/edit_list.txt", "size": 800, "status": "OK", "transfer": "OK", "ent_head": "2.0", "ent_mid": "2.0", "struct": "", "decode": "", "notes": "", "worst": "OK"}, {"rel": "media/archive_2024.mxf.LOCKED", "size": 2500000, "status": "ENCRYPTED", "transfer": "OK", "ent_head": "8.0", "ent_mid": "8.0", "struct": "", "decode": "", "notes": "також: RANSOM_NAME, UNKNOWN_TYPE", "worst": "ENCRYPTED"}, {"rel": "media/news_partial_enc.mxf", "size": 9293893, "status": "PARTIAL_ENCRYPTED", "transfer": "OK", "ent_head": "8.0", "ent_mid": "7.475", "struct": "", "decode": "", "notes": "очікував 06 0e 2b 34, отримав 55 6b 27 a7 6c 36 a0 59 | знайдено Body Partition | ентропія голови 8.000 проти тіла 7.475 | перший цілий MXF Partition Pack на зсуві 7810048 (7.4 МБ) — есенція ймовірно рятується | також: BAD_MAGIC", "worst": "PARTIAL_ENCRYPTED"}, {"rel": "media/master_copy_ok.mxf", "size": 9293893, "status": "DECODE_ERROR", "transfer": "HASH_MISMATCH", "ent_head": "7.387", "ent_mid": "7.475", "struct": "ok", "decode": "fail", "notes": "ffmpeg: [vist#0:0/mpeg2video @ 0x558f15da6e80] Decoder thread returned error: Invalid data found when processing input | cdd49f6b3481a393… -> 39cbe6e47e1a7f98…", "worst": "HASH_MISMATCH"}, {"rel": "docs/tone.wav", "size": 441078, "status": "", "transfer": "MISSING", "ent_head": null, "ent_mid": null, "struct": "", "decode": "", "notes": "", "worst": "MISSING"}], "severity": {"OK": 0, "UNKNOWN_TYPE": 10, "SKIPPED": 5, "EMPTY_FILE": 30, "SUSPECT_ENTROPY": 40, "STRUCT_FAIL": 50, "DECODE_ERROR": 60, "BAD_MAGIC": 70, "RANSOM_NAME": 75, "PARTIAL_ENCRYPTED": 85, "ENCRYPTED": 90, "READ_ERROR": 100, "EXTRA": 20, "MTIME_DIFF": 25, "SIZE_MISMATCH": 80, "HASH_MISMATCH": 95, "MISSING": 100}, "hints": {"OK": "Перевірки пройдено", "UNKNOWN_TYPE": "Тип файлу не в таблиці сигнатур — перевірено лише хеш", "SKIPPED": "Перевірки вимкнено для цього файлу", "EMPTY_FILE": "Файл нульового розміру", "SUSPECT_ENTROPY": "Ентропія вища за норму для цього типу — можлива підміна вмісту", "STRUCT_FAIL": "ffprobe/mxf2raw не змогли розібрати контейнер або він обрізаний", "DECODE_ERROR": "Помилки під час повного декодування — биті кадри або обрив", "BAD_MAGIC": "Перші байти не відповідають розширенню — вміст не той, що заявлено", "RANSOM_NAME": "Ім'я файлу схоже на записку або дописане розширення шифрувальника", "PARTIAL_ENCRYPTED": "Голова файлу зашифрована, тіло схоже на живе — есенцію ймовірно можна врятувати", "ENCRYPTED": "Файл зашифрований повністю", "READ_ERROR": "Файл не читається (I/O, права доступу, битий сектор)", "MISSING": "Є на джерелі, немає на приймачі", "EXTRA": "Є на приймачі, немає в маніфесті джерела", "SIZE_MISMATCH": "Розмір не збігається з джерелом", "HASH_MISMATCH": "Хеш не збігається з джерелом — файл змінився під час переносу", "MTIME_DIFF": "Час модифікації відрізняється (не завжди помилка)"}}</script>
+<script>
+const D=JSON.parse(document.getElementById('data').textContent);
+const SEV=D.severity, HINT=D.hints, R=D.rows;
+const cls=s=>{const v=SEV[s]||0;return v===0?'s0':v<50?'s1':v<85?'s2':'s3'};
+const fmt=b=>{b=+b||0;const u=['B','KB','MB','GB','TB'];let i=0;while(b>=1024&&i<4){b/=1024;i++}
+  return b.toFixed(i?1:0)+' '+u[i]};
+let filter=null,q='',limit=500,sortK='__sev',sortD=-1;
+const counts={};R.forEach(r=>{const k=r.worst;counts[k]=(counts[k]||0)+1});
+const order=Object.keys(counts).sort((a,b)=>(SEV[b]||0)-(SEV[a]||0));
+document.getElementById('bar').innerHTML=order.map(k=>
+  `<i class="${cls(k)}" style="width:${counts[k]/R.length*100}%;background:currentColor" title="${k}: ${counts[k]}"></i>`).join('');
+document.getElementById('tiles').innerHTML=
+  `<div class="tile" data-f=""><div class="n">${R.length}</div><div class="l">усього файлів</div></div>`+
+  order.map(k=>`<div class="tile" data-f="${k}"><div class="n ${cls(k)}" style="background:none;padding:0">${counts[k]}</div><div class="l">${k}</div></div>`).join('');
+document.getElementById('lg').innerHTML=order.map(k=>`<li><b>${k}</b> — ${HINT[k]||''}</li>`).join('');
+function view(){let v=R;if(filter)v=v.filter(r=>r.worst===filter);
+ if(q){const s=q.toLowerCase();v=v.filter(r=>(r.rel+' '+r.status+' '+r.transfer+' '+r.notes).toLowerCase().includes(s))}
+ v=v.slice().sort((a,b)=>{const x=sortK==='__sev'?(SEV[a.worst]||0):a[sortK],y=sortK==='__sev'?(SEV[b.worst]||0):b[sortK];
+  if(x===y)return a.rel<b.rel?-1:1;return (x>y?1:-1)*sortD});return v}
+function render(){const v=view();document.getElementById('tb').innerHTML=v.slice(0,limit).map(r=>
+ `<tr><td class="p">${r.rel}</td><td class="num">${fmt(r.size)}</td>
+  <td><span class="pill ${cls(r.status)}">${r.status}</span></td>
+  <td>${r.transfer?`<span class="pill ${cls(r.transfer)}">${r.transfer}</span>`:''}</td>
+  <td class="num">${r.ent_head??''}</td><td class="num">${r.ent_mid??''}</td>
+  <td>${r.struct||''}</td><td>${r.decode||''}</td><td class="note">${r.notes||''}</td></tr>`).join('');
+ document.getElementById('more').textContent=v.length>limit?`показано ${limit} з ${v.length} — натисніть, щоб показати ще`:`${v.length} рядків`;
+ document.getElementById('more').style.cursor=v.length>limit?'pointer':'default';
+ document.querySelectorAll('.tile').forEach(t=>t.classList.toggle('on',t.dataset.f===(filter||'')))}
+document.getElementById('tiles').onclick=e=>{const t=e.target.closest('.tile');if(!t)return;
+ filter=t.dataset.f||null;limit=500;render()};
+document.getElementById('q').oninput=e=>{q=e.target.value;limit=500;render()};
+document.getElementById('clear').onclick=()=>{filter=null;q='';document.getElementById('q').value='';limit=500;render()};
+document.getElementById('more').onclick=()=>{limit+=2000;render()};
+document.querySelectorAll('th').forEach(th=>th.onclick=()=>{const k=th.dataset.k;
+ if(sortK===k)sortD=-sortD;else{sortK=k;sortD=1}render()});
+document.getElementById('csv').onclick=()=>{const v=view();
+ const head=['rel','size','status','transfer','ent_head','ent_mid','struct','decode','notes'];
+ const esc=s=>'"'+String(s??'').replace(/"/g,'""')+'"';
+ const txt=[head.join(',')].concat(v.map(r=>head.map(h=>esc(r[h])).join(','))).join('\n');
+ const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();
+ try{document.execCommand('copy');alert('CSV видимих рядків скопійовано в буфер обміну ('+v.length+' шт.)')}
+ catch(e){alert('Не вдалося скопіювати')}document.body.removeChild(ta)};
+render();
+</script></body></html>

@@ -1,0 +1,652 @@
+<title>Польовий мануал mxfguard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;450;600&display=swap">
+
+<style>
+:root{
+  --paper:#eef1f4;
+  --card:#ffffff;
+  --sunk:#e3e8ec;
+  --ink:#0f161b;
+  --ink-2:#3a4750;
+  --mut:#6a7883;
+  --line:#d2dae0;
+  --line-2:#bcc7cf;
+  --accent:#1f5f8b;
+  --accent-soft:#dbe8f1;
+  --ok:#2f7d4f;
+  --warn:#a8791a;
+  --err:#c0453a;
+  --crit:#8f2119;
+  --shadow:0 1px 2px rgba(15,22,27,.05),0 10px 26px -20px rgba(15,22,27,.35);
+  --f-disp:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --f-body:"IBM Plex Sans","Segoe UI",Roboto,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0e1418;
+    --card:#161e23;
+    --sunk:#1d272d;
+    --ink:#e5edf2;
+    --ink-2:#b3c1cb;
+    --mut:#7f8f9b;
+    --line:#26323a;
+    --line-2:#35444e;
+    --accent:#6fb3d9;
+    --accent-soft:#12303f;
+    --ok:#5fbf85;
+    --warn:#d9a83f;
+    --err:#e8695c;
+    --crit:#ff8a7a;
+    --shadow:0 1px 2px rgba(0,0,0,.45),0 12px 30px -22px rgba(0,0,0,.9);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0e1418;
+  --card:#161e23;
+  --sunk:#1d272d;
+  --ink:#e5edf2;
+  --ink-2:#b3c1cb;
+  --mut:#7f8f9b;
+  --line:#26323a;
+  --line-2:#35444e;
+  --accent:#6fb3d9;
+  --accent-soft:#12303f;
+  --ok:#5fbf85;
+  --warn:#d9a83f;
+  --err:#e8695c;
+  --crit:#ff8a7a;
+  --shadow:0 1px 2px rgba(0,0,0,.45),0 12px 30px -22px rgba(0,0,0,.9);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--f-body);
+  font-size:16px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+.shell{max-width:1220px;margin:0 auto;padding:0 24px 100px}
+
+/* ---------- масthead ---------- */
+.bars{display:flex;height:6px;margin:0 -24px}
+.bars i{flex:1}
+.bars i:nth-child(1){background:#b9bcbd}
+.bars i:nth-child(2){background:#b9b539}
+.bars i:nth-child(3){background:#3fa9ac}
+.bars i:nth-child(4){background:#3d9b45}
+.bars i:nth-child(5){background:#a94398}
+.bars i:nth-child(6){background:#ac3f39}
+.bars i:nth-child(7){background:#3c449e}
+
+header.top{padding:30px 0 20px;border-bottom:1px solid var(--line-2);margin-bottom:14px}
+.slate{
+  display:flex;flex-wrap:wrap;gap:8px 16px;align-items:baseline;
+  font-family:var(--f-mono);font-size:11.5px;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--mut);margin-bottom:16px;
+}
+.slate b{color:var(--accent);font-weight:500}
+h1{
+  font-family:var(--f-disp);font-weight:700;
+  font-size:clamp(32px,5.4vw,52px);line-height:1;letter-spacing:-.02em;
+  margin:0 0 14px;text-wrap:balance;
+}
+.lede{font-size:17.5px;color:var(--ink-2);max-width:64ch;margin:0}
+
+/* ---------- каркас ---------- */
+.frame{display:grid;grid-template-columns:1fr;gap:34px;margin-top:34px}
+@media (min-width:1000px){
+  .frame{grid-template-columns:216px minmax(0,1fr);gap:44px;align-items:start}
+  nav.rail{position:sticky;top:20px}
+}
+nav.rail ol{
+  list-style:none;margin:0;padding:0;
+  display:flex;flex-direction:column;gap:1px;
+  border-left:2px solid var(--line);
+}
+nav.rail a{
+  display:flex;gap:9px;padding:5px 12px;
+  font-family:var(--f-disp);font-size:13.5px;font-weight:500;
+  color:var(--ink-2);text-decoration:none;border-left:2px solid transparent;
+  margin-left:-2px;
+}
+nav.rail a:hover{color:var(--accent);border-left-color:var(--accent)}
+nav.rail a.here{color:var(--accent);border-left-color:var(--accent);font-weight:600}
+nav.rail a span{color:var(--mut);font-family:var(--f-mono);font-size:11.5px;flex:none;padding-top:1px}
+nav.rail a.here span{color:var(--accent)}
+nav.rail a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+main{min-width:0}
+
+/* ---------- секції ---------- */
+section{scroll-margin-top:20px}
+section+section{margin-top:52px}
+.shead{display:flex;gap:14px;align-items:baseline;
+  border-bottom:1px solid var(--line-2);padding-bottom:9px;margin-bottom:20px}
+.snum{font-family:var(--f-mono);font-size:12px;color:var(--accent);
+  font-weight:500;flex:none;letter-spacing:.04em}
+h2{font-family:var(--f-disp);font-weight:600;
+  font-size:clamp(21px,2.8vw,29px);line-height:1.1;margin:0;letter-spacing:-.012em}
+h3{font-family:var(--f-disp);font-weight:600;font-size:17px;
+  margin:28px 0 8px;letter-spacing:-.005em}
+p{max-width:68ch;margin:0 0 14px}
+.mut{color:var(--ink-2)}
+strong{font-weight:600}
+
+/* ---------- виноски ---------- */
+.note{
+  background:var(--card);border:1px solid var(--line);
+  border-left:4px solid var(--accent);border-radius:2px;
+  padding:14px 16px;margin:18px 0;box-shadow:var(--shadow);
+}
+.note.hard{border-left-color:var(--crit)}
+.note.warn{border-left-color:var(--warn)}
+.note p{margin:0;max-width:64ch;font-size:15.3px;color:var(--ink-2)}
+.note p+p{margin-top:9px}
+.note .lbl{
+  font-family:var(--f-mono);font-size:11px;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--accent);display:block;margin-bottom:5px;
+}
+.note.hard .lbl{color:var(--crit)}
+.note.warn .lbl{color:var(--warn)}
+
+/* ---------- код ---------- */
+.cmd{margin:16px 0;border:1px solid var(--line);border-radius:3px;
+  background:var(--card);overflow:hidden;box-shadow:var(--shadow)}
+.cmd .bar{
+  display:flex;justify-content:space-between;align-items:center;gap:12px;
+  background:var(--sunk);border-bottom:1px solid var(--line);padding:6px 8px 6px 13px;
+  font-family:var(--f-mono);font-size:11px;letter-spacing:.05em;
+  text-transform:uppercase;color:var(--mut);
+}
+.cmd pre{margin:0;padding:13px 14px;overflow-x:auto;
+  font-family:var(--f-mono);font-size:13px;line-height:1.65;color:var(--ink)}
+.cmd pre .c{color:var(--mut)}
+.cmd pre .k{color:var(--accent)}
+button.cp{
+  font-family:var(--f-mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;
+  background:transparent;border:1px solid var(--line-2);color:var(--ink-2);
+  padding:3px 9px;border-radius:2px;cursor:pointer;flex:none;
+}
+button.cp:hover{border-color:var(--accent);color:var(--accent)}
+button.cp:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+code{font-family:var(--f-mono);font-size:.875em;background:var(--sunk);
+  padding:1px 5px;border-radius:2px;border:1px solid var(--line)}
+
+/* ---------- таблиці ---------- */
+.tw{overflow-x:auto;margin:18px 0;border:1px solid var(--line);
+  border-radius:3px;background:var(--card);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:14.4px}
+th,td{text-align:left;padding:9px 13px;border-bottom:1px solid var(--line);vertical-align:top}
+tbody tr:last-child td{border-bottom:none}
+th{font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--mut);font-weight:500;
+  background:var(--sunk);white-space:nowrap}
+td.m{font-family:var(--f-mono);font-size:12.5px;white-space:nowrap}
+td.num{text-align:right;font-family:var(--f-mono);
+  font-variant-numeric:tabular-nums;white-space:nowrap}
+
+.pill{display:inline-block;font-family:var(--f-mono);font-size:11.5px;
+  font-weight:500;padding:2px 8px;border-radius:99px;white-space:nowrap}
+.s0{color:var(--ok);background:color-mix(in srgb,var(--ok) 15%,transparent)}
+.s1{color:var(--warn);background:color-mix(in srgb,var(--warn) 18%,transparent)}
+.s2{color:var(--err);background:color-mix(in srgb,var(--err) 15%,transparent)}
+.s3{color:var(--crit);background:color-mix(in srgb,var(--crit) 18%,transparent)}
+
+/* ---------- пошук статусу ---------- */
+.finder{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:18px 0 4px}
+.finder input{
+  flex:1;min-width:230px;font-family:var(--f-mono);font-size:13px;
+  padding:9px 12px;background:var(--card);color:var(--ink);
+  border:1px solid var(--line-2);border-radius:3px;
+}
+.finder input:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.finder .cnt{font-family:var(--f-mono);font-size:12px;color:var(--mut);
+  font-variant-numeric:tabular-nums}
+tr[hidden]{display:none}
+
+/* ---------- кроки ---------- */
+ol.steps{list-style:none;counter-reset:s;margin:18px 0;padding:0;
+  display:flex;flex-direction:column;gap:16px}
+ol.steps>li{counter-increment:s;display:flex;gap:14px;align-items:flex-start}
+ol.steps>li::before{
+  content:counter(s);flex:none;
+  font-family:var(--f-mono);font-size:12px;font-weight:500;
+  color:var(--accent);border:1px solid var(--accent);border-radius:2px;
+  width:24px;height:24px;display:flex;align-items:center;justify-content:center;
+  margin-top:2px;
+}
+ol.steps>li>div{min-width:0;flex:1}
+ol.steps b{font-family:var(--f-disp);font-weight:600;font-size:16px}
+ol.steps p{margin:3px 0 0;font-size:15.3px;color:var(--ink-2)}
+
+ul.plain{margin:12px 0;padding-left:20px;max-width:66ch}
+ul.plain li{margin-bottom:7px;color:var(--ink-2)}
+ul.plain li::marker{color:var(--mut)}
+
+footer{margin-top:64px;padding-top:18px;border-top:1px solid var(--line-2);
+  color:var(--mut);font-size:13.5px;max-width:70ch}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+@media print{
+  nav.rail,button.cp,.finder{display:none}
+  body{background:#fff;color:#000}
+  .cmd,.tw,.note{box-shadow:none;break-inside:avoid}
+  section{break-inside:avoid-page}
+}
+</style>
+
+<div class="shell">
+
+<div class="bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+
+<header class="top">
+  <div class="slate">
+    <b>mxfguard 1.0</b>
+    <span>Польовий мануал</span>
+    <span>Читати до того, як щось форматувати</span>
+  </div>
+  <h1>Як працювати з mxfguard на місці</h1>
+  <p class="lede">Інструмент відповідає на три різні питання: чи файл доїхав, чи він був цілим до того, як його чіпали, і чи не переїхало разом із ним пошифроване сміття. Плутати ці питання дорого — хеш чесно копіює труп файлу зі статусом OK.</p>
+</header>
+
+<div class="frame">
+
+<nav class="rail" aria-label="Розділи">
+  <ol>
+    <li><a href="#s1"><span>01</span>Перед стартом</a></li>
+    <li><a href="#s2"><span>02</span>Підготовка машини</a></li>
+    <li><a href="#s3"><span>03</span>Робочий цикл</a></li>
+    <li><a href="#s4"><span>04</span>Як читати звіт</a></li>
+    <li><a href="#s5"><span>05</span>Порятунок MXF</a></li>
+    <li><a href="#s6"><span>06</span>Коли щось не так</a></li>
+    <li><a href="#s7"><span>07</span>Шпаргалка</a></li>
+    <li><a href="#s8"><span>08</span>Межі</a></li>
+  </ol>
+</nav>
+
+<main>
+
+<!-- ============ 01 ============ -->
+<section id="s1">
+  <div class="shead"><span class="snum">01</span><h2>Перед стартом</h2></div>
+
+  <p>Дві речі неможливо відкотити. Обидві перевіряються за півхвилини, і обидві регулярно згадують уже після форматування.</p>
+
+  <div class="note hard">
+    <span class="lbl">Не відкотиш · EFS</span>
+    <p>Якщо файли шифрувала вбудована в Windows EFS, ключ живе в профілі користувача. Переставили ОС — профіль зник — дані втрачені математично. Жоден інструмент у цьому мануалі їх не поверне.</p>
+  </div>
+
+  <div class="note hard">
+    <span class="lbl">Не відкотиш · артефакти інциденту</span>
+    <p>Якщо .mxf зіпсував шифрувальник, форматування системного диска знищує точку входу, персистенцію і журнали. Питання «як воно зайшло» лишиться без відповіді назавжди — і зайде вдруге.</p>
+  </div>
+
+  <div class="cmd">
+    <div class="bar"><span>PowerShell · на кожній машині до переставлення</span><button class="cp" type="button">Копіювати</button></div>
+<pre><span class="c"># чи є EFS-шифрування на медіа-каталозі</span>
+cipher /c "D:\Media\*.mxf"
+
+<span class="c"># ключі відновлення BitLocker — виписати або зберегти в AD</span>
+manage-bde -protectors -get C:
+
+<span class="c"># особисті сертифікати; EFS-сертифікат експортувати з приватним ключем:</span>
+<span class="c"># certmgr.msc → Personal → Certificates → Export → Yes, export the private key</span>
+certutil -user -store My</pre>
+  </div>
+
+  <div class="note">
+    <span class="lbl">Якщо це розбір інциденту</span>
+    <p>Скануй <strong>з чистого середовища</strong>: Linux Live USB або WinPE, диск змонтований read-only. Скомпрометована ОС може підсовувати підмінені дані — хеш, порахований на ній, не підтверджує нічого.</p>
+    <p><strong>Не видаляй пошифровані файли.</strong> Сучасні шифрувальники майже завжди псують лише перші мегабайти великого файлу — ганяти 200-гігабайтний MXF цілком їм дорого. Тіло зазвичай живе, і його дістають (розділ 05).</p>
+  </div>
+</section>
+
+<!-- ============ 02 ============ -->
+<section id="s2">
+  <div class="shead"><span class="snum">02</span><h2>Підготовка машини</h2></div>
+
+  <p>Розпакуй архів у будь-яку теку — наприклад <code>C:\mxfguard\</code>. Не в <code>Program Files</code>: скрипти пишуть поруч із собою, а туди без прав адміністратора не пишеться.</p>
+
+  <div class="note">
+    <span class="lbl">Ставити нічого не треба</span>
+    <p>У повній збірці Python і ffmpeg лежать усередині архіву, у <code>tools\python\</code> та <code>tools\bin\</code>. Скрипти підхоплюють їх самі й лише за їх відсутності шукають щось у системі. Мережа не потрібна — це і є розрахунок на щойно переставлену машину, де ще нічого немає.</p>
+  </div>
+
+  <ol class="steps">
+    <li><div><b>tools\0-preflight.cmd</b>
+      <p>Показує, що саме буде використано. У повній збірці має написати «з комплекту» біля Python і ffmpeg і жодного <code>[X]</code>. У легкій збірці — перевіряє системні і, якщо треба, ставить xxhash із теки <code>vendor\</code> без інтернету.</p></div></li>
+    <li><div><b>tests\selftest.cmd</b>
+      <p>Створює тимчасове дерево з наперед відомими поломками і звіряє, що інструмент їх ловить. Хвилина. На бойові дані не впливає, після себе прибирає.</p></div></li>
+    <li><div><b>Прочитати вивід самоперевірки</b>
+      <p>Має бути <code>УСІ ПЕРЕВІРКИ ПРОЙДЕНО</code>. Якщо ні — не запускай на бойових даних, поки не з'ясовано чому.</p></div></li>
+  </ol>
+
+  <h3>Що потрібно, а що ні</h3>
+  <p>У повній збірці перші три рядки вже закриті вмістом архіву. Таблиця стосується легкої збірки або випадку, коли комплектні теки видалили.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Компонент</th><th>Обов'язково</th><th>Без нього</th></tr></thead>
+    <tbody>
+      <tr><td class="m">Python 3.9+</td><td><span class="pill s3">так</span></td><td>Не працює нічого</td></tr>
+      <tr><td class="m">ffmpeg / ffprobe</td><td><span class="pill s1">бажано</span></td><td>Немає перевірок <code>struct</code> і <code>decode</code> та порятунку есенції. Хеш, magic, ентропія і пошук зсуву працюють</td></tr>
+      <tr><td class="m">xxhash</td><td><span class="pill s0">ні</span></td><td>Хеш рахується на blake2b — приблизно у 8 разів повільніше</td></tr>
+      <tr><td class="m">mxf2raw (bmxlib)</td><td><span class="pill s0">ні</span></td><td>Немає додаткового суворого MXF-валідатора</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="note warn">
+    <span class="lbl">Куди пишуться маніфести</span>
+    <p>За замовчуванням у <code>C:\mxfguard-audit\ІМ'Я-МАШИНИ\</code>. Це навмисно <strong>поза</strong> деревом, яке сканується — інакше маніфест потрапить у власний скан і в наступний перенос. Змінити можна змінною <code>AUDIT</code> перед запуском скрипта.</p>
+  </div>
+</section>
+
+<!-- ============ 03 ============ -->
+<section id="s3">
+  <div class="shead"><span class="snum">03</span><h2>Робочий цикл</h2></div>
+
+  <p>Скрипти пронумеровані в порядку запуску. Порядок має значення: маніфест джерела неможливо зробити заднім числом, після того як джерело вже переформатували.</p>
+
+  <ol class="steps">
+    <li><div><b>1-scan-source.cmd — маніфест джерела</b>
+      <p>Знімок «як було», до копіювання. Це єдина точка відліку, з якою потім є що звіряти. Питає шлях до джерела, рахує хеш, сигнатури й ентропію.</p></div></li>
+    <li><div><b>Копіювання — робиш своїм інструментом</b>
+      <p>mxfguard у цьому не бере участі. Важливо лише знати, що саме твій копіювальник перевіряє (таблиця нижче).</p></div></li>
+    <li><div><b>2-scan-dest.cmd — маніфест приймача</b>
+      <p>Швидкий прохід, тільки хеші. Відповідає на одне питання: чи те саме доїхало.</p></div></li>
+    <li><div><b>3-compare-report.cmd — звірка і звіт</b>
+      <p>Порівнює два маніфести й збирає HTML-звіт. Якщо скаже, що розбіжностей немає — перенос чистий. Це ще не означає, що файли цілі.</p></div></li>
+    <li><div><b>4-deep-validate.cmd — контентна валідація</b>
+      <p>Дивиться всередину файлів. Довго: на десятки ТБ — ніч і більше. <kbd>Ctrl+C</kbd> безпечний, повторний запуск продовжить з місця зупинки. Після нього запусти <code>3-compare-report.cmd</code> ще раз — він підхопить повний маніфест.</p></div></li>
+  </ol>
+
+  <div class="note">
+    <span class="lbl">Чому потрібні обидві перевірки</span>
+    <p>На тестах файл із 4 КБ перевернутих байтів у середині пройшов повний декод <strong>без помилок</strong> — і був спійманий тільки звіркою хешів. Інший файл переїхав біт-у-біт із бездоганним хешем — і виявився пошифрованим сміттям. Хеш і декод ловлять різне; жоден не є надмножиною іншого.</p>
+  </div>
+
+  <h3>Чим копіювати</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Інструмент</th><th>Верифікація</th><th>Коментар</th></tr></thead>
+    <tbody>
+      <tr><td class="m">robocopy</td><td><span class="pill s2">немає</span></td><td><code>/v</code> — це verbose, не verify. Чудовий копіювальник із нульовим контролем вмісту</td></tr>
+      <tr><td class="m">FastCopy</td><td><span class="pill s0">є (xxHash)</span></td><td>Найшвидший під Windows, портативний, вмикається галочкою Verify</td></tr>
+      <tr><td class="m">TeraCopy</td><td><span class="pill s0">є (CRC32…BLAKE3)</span></td><td>Вміє експортувати й перевіряти зовнішній хеш-лист</td></tr>
+      <tr><td class="m">rsync -aHAX</td><td><span class="pill s0">вбудована</span></td><td>Звіряє контрольну суму кожного переданого файлу</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="cmd">
+    <div class="bar"><span>Windows · робочий варіант копіювання</span><button class="cp" type="button">Копіювати</button></div>
+<pre>robocopy D:\Media E:\Media /E /COPY:DAT /DCOPY:T /R:1 /W:5 /MT:16 /NP ^
+    /XF Thumbs.db desktop.ini /LOG+:C:\mxfguard-audit\copy.log</pre>
+  </div>
+
+  <div class="note warn">
+    <span class="lbl">Переносяться тільки дані</span>
+    <p>Медіа, проєкти, документи. Ніяких <code>AppData</code>, <code>Startup</code>, <code>*.exe</code>, <code>*.dll</code>, <code>*.lnk</code>, <code>*.ps1</code> зі старих профілів і ніякого «перенести все» через міграцію профілю — саме так шифрувальник переїжджає на нову машину разом із даними.</p>
+  </div>
+</section>
+
+<!-- ============ 04 ============ -->
+<section id="s4">
+  <div class="shead"><span class="snum">04</span><h2>Як читати звіт</h2></div>
+
+  <p>Звіт відкривається у браузері. Плитки вгорі фільтрують таблицю, заголовки сортують, пошук шукає за шляхом, статусом і приміткою. Розбирати треба все, що важче за <code>OK</code>.</p>
+
+  <p class="mut">Знайди статус, який бачиш у звіті:</p>
+  <div class="finder">
+    <input type="search" id="q" placeholder="напр. HASH_MISMATCH або «зашифрований»" autocomplete="off" aria-label="Пошук статусу">
+    <span class="cnt" id="cnt"></span>
+  </div>
+
+  <div class="tw"><table id="st">
+    <thead><tr><th>Статус</th><th>Що сталося</th><th>Що робити</th></tr></thead>
+    <tbody>
+      <tr><td><span class="pill s3">MISSING</span></td><td>Є на джерелі, немає на приймачі</td><td>Копіювати повторно. Перевірити фільтри копіювання і довжину шляху понад 260 символів</td></tr>
+      <tr><td><span class="pill s3">HASH_MISMATCH</span></td><td>Розмір той самий, вміст інший</td><td>Копіювати повторно і перевірити носій — це вже сигнал про залізо</td></tr>
+      <tr><td><span class="pill s3">READ_ERROR</span></td><td>Файл не читається: I/O, права, битий сектор</td><td>Перевірити SMART диска. Спробувати прочитати з іншої машини</td></tr>
+      <tr><td><span class="pill s3">ENCRYPTED</span></td><td>Ентропія 8.0 по всьому тілу, сигнатура не збігається</td><td>Відновлювати з бекапу. <strong>Але спершу глянь <code>salvage_offset</code></strong> — див. розділ 05</td></tr>
+      <tr><td><span class="pill s3">PARTIAL_ENCRYPTED</span></td><td>Голова зашифрована, тіло живе</td><td>Есенція рятується. Запусти <code>salvage-mxf.cmd</code></td></tr>
+      <tr><td><span class="pill s2">SIZE_MISMATCH</span></td><td>Обрив копіювання</td><td>Копіювати повторно</td></tr>
+      <tr><td><span class="pill s2">RANSOM_NAME</span></td><td>Записка шифрувальника або дописане поверх справжнього розширення</td><td>Зберегти зразок окремо — за ним ідентифікують сімейство, для частини існують публічні декриптори</td></tr>
+      <tr><td><span class="pill s2">BAD_MAGIC</span></td><td>Перші байти не відповідають розширенню</td><td>Перевірити вручну. Частина легітимна: перейменовані розширення, службові файли NLE</td></tr>
+      <tr><td><span class="pill s2">DECODE_ERROR</span></td><td>ffmpeg спіткнувся на реальних кадрах: биті дані або обрив</td><td>Брати з бекапу. Якщо бекапу немає — перекодувати те, що декодується</td></tr>
+      <tr><td><span class="pill s2">STRUCT_FAIL</span></td><td>Контейнер не розбирається або обрізаний</td><td>Відкрити в NLE й подивитись. Часто це обрив запису, а не наслідок переносу</td></tr>
+      <tr><td><span class="pill s1">SUSPECT_ENTROPY</span></td><td>Ентропія вища за норму, але сигнатура ціла</td><td>Подивитись очима. Часто хибне спрацювання на щільно стиснутому матеріалі</td></tr>
+      <tr><td><span class="pill s1">EMPTY_FILE</span></td><td>Файл нульового розміру</td><td>Перевірити, чи він був порожній на джерелі</td></tr>
+      <tr><td><span class="pill s1">MTIME_DIFF</span></td><td>Час модифікації відрізняється</td><td>Зазвичай не помилка — наслідок ключів копіювання</td></tr>
+      <tr><td><span class="pill s1">EXTRA</span></td><td>Є на приймачі, немає в маніфесті джерела</td><td>Зазвичай системне сміття або залишки попереднього прогону</td></tr>
+      <tr><td><span class="pill s1">UNKNOWN_TYPE</span></td><td>Розширення не в таблиці сигнатур</td><td>Перевірено лише хеш. Для рідкісних форматів це норма</td></tr>
+      <tr><td><span class="pill s0">OK</span></td><td>Перевірки пройдено</td><td>Нічого. Пам'ятай: OK означає «пройшло ті перевірки, які запускали»</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="note warn">
+    <span class="lbl">Пастка, на якій плутаються</span>
+    <p>Статус <code>ENCRYPTED</code> <strong>не означає</strong>, що рятувати нічого. Вибірка «тіла» береться рівно на середині файлу: якщо шифрувальник дістав більше половини, і голова, і середина будуть у шифрі, а статус стане <code>ENCRYPTED</code> — навіть коли хвіст цілий. Зсув <code>salvage_offset</code> у таких рядках усе одно рахується. <strong>Дивись його завжди.</strong></p>
+  </div>
+</section>
+
+<!-- ============ 05 ============ -->
+<section id="s5">
+  <div class="shead"><span class="snum">05</span><h2>Порятунок MXF</h2></div>
+
+  <p>Режим <code>--ransomware</code> шукає в голові файлу перший неушкоджений MXF Partition Pack — 13-байтовий ключ, спільний для Header, Body, Footer і Random Index Pack. Якщо він знайшовся на зсуві 7,2 МБ, значить зашифровані лише перші мегабайти, і есенцію за цим зсувом можна діставати.</p>
+
+  <ol class="steps">
+    <li><div><b>5-ransomware-triage.cmd</b>
+      <p>Сканує карантин, рахує sha256 (придатний для акту) і збирає окремий звіт. Дивись стовпець <code>salvage_offset</code>.</p></div></li>
+    <li><div><b>salvage-mxf.cmd</b>
+      <p>Бере всі файли зі знайденим зсувом, вирізає хвіст і підбирає демуксер. Джерело не змінюється, результат пишеться в окрему теку.</p></div></li>
+    <li><div><b>Відкрити *.preview.png і подивитись очима</b>
+      <p>Обов'язково. Інструмент не відрізняє реальний сюжет від кольорового шуму — це може зробити тільки людина.</p></div></li>
+  </ol>
+
+  <div class="note">
+    <span class="lbl">Що виходить і чого не виходить</span>
+    <p><strong>Виходить:</strong> сам матеріал — картинка і рух. На тесті з MXF, у якого знищено перші 6 МБ із 14, витягнуто 7,1 МБ есенції та реальні кадри.</p>
+    <p><strong>Не виходить:</strong> оригінальний таймкод, розкладка аудіодоріжок і метадані MXF. Вони жили в заголовку, який знищено, і разом із ним і зникли. Звук у MXF лежить окремими KLV-пакетами і сирим демуксером не витягується.</p>
+  </div>
+
+  <div class="cmd">
+    <div class="bar"><span>вручну, для одного файлу</span><button class="cp" type="button">Копіювати</button></div>
+<pre><span class="c"># зсув береться зі стовпця salvage_offset у звіті</span>
+python tools\salvage.py --file "Q:\quarantine\news.mxf" --offset 7515648
+
+<span class="c"># або пакетно, по всьому маніфесту карантину</span>
+python tools\salvage.py --csv C:\mxfguard-audit\HOST\quarantine.csv ^
+    --root Q:\quarantine --outdir C:\mxfguard-audit\HOST\salvaged</pre>
+  </div>
+
+  <div class="note warn">
+    <span class="lbl">Обмеження детекту</span>
+    <p>Часткове шифрування розпізнається лише на файлах <strong>понад 3 МБ</strong>. Менші читаються цілком і порівнювати голову з тілом ніде. Для медіа-архіву це не проблема, для дрібних документів — так.</p>
+  </div>
+</section>
+
+<!-- ============ 06 ============ -->
+<section id="s6">
+  <div class="shead"><span class="snum">06</span><h2>Коли щось не так</h2></div>
+
+  <div class="tw"><table>
+    <thead><tr><th>Симптом</th><th>Причина і що робити</th></tr></thead>
+    <tbody>
+      <tr><td class="m">Python не знайдено</td><td>Перевір, чи на місці тека <code>tools\python\</code> — у повній збірці рантайм там. Якщо її немає, це легка збірка: <code>winget install Python.Python.3.12</code>, під час установки — галочка «Add python.exe to PATH», після установки закрий і відкрий консоль</td></tr>
+      <tr><td class="m">Кракозябри в консолі</td><td>Кодова сторінка. Запускай через <code>.cmd</code>-скрипти — вони самі роблять <code>chcp 65001</code>. Вручну: спершу <code>chcp 65001</code>, потім команда</td></tr>
+      <tr><td class="m">struct і decode<br>завжди порожні</td><td>Немає ffmpeg. <code>winget install Gyan.FFmpeg</code>, потім нова консоль</td></tr>
+      <tr><td class="m">Скан дуже повільний</td><td>Немає xxhash — рахує на blake2b. Постав із <code>vendor\</code>. Якщо впирається в диск, а не в CPU, більше <code>--jobs</code> не допоможе</td></tr>
+      <tr><td class="m">Прогін обірвався</td><td>Запусти той самий скрипт ще раз. Обгортки завжди йдуть із <code>--resume</code> і продовжують з місця зупинки</td></tr>
+      <tr><td class="m">Багато READ_ERROR<br>на одному диску</td><td>Це вже про залізо, а не про перенос. Перевір SMART, зупини копіювання з цього носія</td></tr>
+      <tr><td class="m">MISSING на файлах<br>із довгими шляхами</td><td>Ліміт 260 символів у копіювальника. Сам mxfguard довгі шляхи читає, спотикається зазвичай robocopy. Копіюй ближче до кореня диска</td></tr>
+      <tr><td class="m">Купа BAD_MAGIC<br>на службових файлах</td><td>Нормально для проєктних файлів NLE. Звузь скан: <code>--include-ext mxf,mov,wav</code></td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="note">
+    <span class="lbl">Код виходу</span>
+    <p><code>compare</code> повертає <strong>1</strong>, якщо є MISSING, HASH_MISMATCH або SIZE_MISMATCH, і <strong>0</strong>, якщо перенос чистий. Зручно вішати на нього умову у власній обгортці або в задачі планувальника.</p>
+  </div>
+</section>
+
+<!-- ============ 07 ============ -->
+<section id="s7">
+  <div class="shead"><span class="snum">07</span><h2>Шпаргалка</h2></div>
+
+  <p>Якщо обгортки не підходять — усе те саме руками.</p>
+
+  <div class="cmd">
+    <div class="bar"><span>повний цикл переносу</span><button class="cp" type="button">Копіювати</button></div>
+<pre><span class="c"># 1. джерело, до копіювання</span>
+python mxfguard.py scan --root D:\Media --out C:\audit\src.csv ^
+    --checks hash,magic,entropy --hash xxh128 --jobs 8
+
+<span class="c"># 2. копіювання робиться зовні</span>
+
+<span class="c"># 3. приймач, швидко — тільки хеші</span>
+python mxfguard.py scan --root E:\Media --out C:\audit\dst.csv ^
+    --checks hash --hash xxh128 --jobs 8
+
+<span class="c"># 4. звірка: код виходу 1 = є розбіжності</span>
+python mxfguard.py compare --src C:\audit\src.csv --dst C:\audit\dst.csv ^
+    --out C:\audit\diff.csv
+
+<span class="c"># 5. повна валідація вмісту — довго, на ніч</span>
+python mxfguard.py scan --root E:\Media --out C:\audit\dst_full.csv ^
+    --checks hash,magic,entropy,struct,decode --ransomware ^
+    --jobs 8 --decode-jobs 3 --resume
+
+<span class="c"># 6. звіт</span>
+python mxfguard.py report --scan C:\audit\dst_full.csv ^
+    --compare C:\audit\diff.csv --out C:\audit\report.html</pre>
+  </div>
+
+  <h3>Ключі, які справді знадобляться</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Ключ</th><th>Навіщо</th></tr></thead>
+    <tbody>
+      <tr><td class="m">--resume</td><td>Дописати в наявний CSV, пропустивши оброблене. Ставити завжди на довгих прогонах</td></tr>
+      <tr><td class="m">--decode-edges 30</td><td>Декодувати лише перші й останні 30 с. Дешевий димовий тест — але перевернутий байт у середині пропустить</td></tr>
+      <tr><td class="m">--jobs / --decode-jobs</td><td>Тримаються окремо: хешування впирається в диск, ffmpeg — у CPU</td></tr>
+      <tr><td class="m">--include-ext mxf,mov</td><td>Обробляти лише ці розширення</td></tr>
+      <tr><td class="m">--ransomware</td><td>Пошук зсуву для порятунку, детект записок і дописаних розширень. Без нього <code>salvage_offset</code> не рахується</td></tr>
+      <tr><td class="m">--hash sha256</td><td>Коли маніфест іде в акт, аудит або юридичну площину</td></tr>
+      <tr><td class="m">--entropy-threshold</td><td>Поріг ентропії, типово 7.95. Піднімати, якщо забагато хибних SUSPECT_ENTROPY</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Швидкість хешу</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Алгоритм</th><th class="num">МБ/с, 1 ядро</th><th>Коли брати</th></tr></thead>
+    <tbody>
+      <tr><td class="m">xxh128</td><td class="num">4813</td><td>За замовчуванням. Упирається в диск, а не в CPU</td></tr>
+      <tr><td class="m">blake2b</td><td class="num">551</td><td>Автоматичний запасний, якщо модуля xxhash немає</td></tr>
+      <tr><td class="m">sha256</td><td class="num">353</td><td>Коли маніфест іде в акт або аудит</td></tr>
+    </tbody>
+  </table></div>
+  <p class="mut" style="font-size:14.5px">Числа з тестового контейнера на одному ядрі. На бойовому залізі абсолютні значення інші, співвідношення тримається.</p>
+</section>
+
+<!-- ============ 08 ============ -->
+<section id="s8">
+  <div class="shead"><span class="snum">08</span><h2>Межі</h2></div>
+
+  <p>Щоб звіт зі суцільними <code>OK</code> не читався як гарантія, якої він не дає.</p>
+
+  <ul class="plain">
+    <li><strong>Нічого не розшифровує.</strong> Діагностика і оцінка масштабу — так; відновлення ключів — ні.</li>
+    <li><strong>Ентропія — евристика, не доказ.</strong> Стиснуті за природою формати (zip, jpg, mp4) виключені з перевірки саме тому.</li>
+    <li><strong>Таблиця сигнатур не вичерпна.</strong> Рідкісні формати дадуть <code>UNKNOWN_TYPE</code>, а не помилку.</li>
+    <li><strong>Не оцінює якість зображення.</strong> Файл, що декодується без помилок, але з чорним кадром замість сюжету, пройде як <code>OK</code>.</li>
+    <li><strong>Крайовий декод перевіряє лише краї.</strong> <code>--decode-edges</code> — компроміс швидкості, не заміна повному прогону.</li>
+    <li><strong>Не замінює бекап.</strong> Це вимірювальний прилад: він каже, що зламалось, а не повертає зламане.</li>
+  </ul>
+
+  <div class="note warn">
+    <span class="lbl">Гігієна після переносу</span>
+    <p>Старий диск підключати до нової системи read-only, поки не просканований. Офлайн-скан антивірусом до першого запису. Дві копії на різних носіях, одна фізично від'єднана — переставлення ОС є моментом максимальної вразливості, коли єдина актуальна копія лежить на одному носії, підключеному до машини, з якою зараз щось роблять.</p>
+    <p>І те, що забирають із собою й завжди забувають: EFS-сертифікати та ключі BitLocker, ліцензії vMix і плагінів, ODBC/DSN і <code>hosts</code>, задачі планувальника, пресети й шаблони NLE, шрифти, титрувальні пакети, драйвери плат вводу — до того, як машина лишиться без мережі.</p>
+  </div>
+</section>
+
+<footer>
+  Детальний порядок фаз переносу — у сусідньому документі <code>mxfguard-runbook.html</code>, там же чеклісти з відміткою прогресу. Цей мануал відповідає на питання «як цим користуватися», рунбук — на питання «в якому порядку».
+</footer>
+
+</main>
+</div>
+</div>
+
+<script>
+(function(){
+  // --- копіювання команд ---
+  document.querySelectorAll('button.cp').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var pre = btn.closest('.cmd').querySelector('pre');
+      if (!pre) return;
+      var text = pre.innerText.replace(/\u00a0/g, ' ');
+      var done = function(ok){
+        var was = btn.textContent;
+        btn.textContent = ok ? 'Скопійовано' : 'Не вдалося';
+        setTimeout(function(){ btn.textContent = was; }, 1400);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function(){ done(true); },
+                                                 function(){ done(false); });
+        return;
+      }
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = false;
+      try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+      document.body.removeChild(ta);
+      done(ok);
+    });
+  });
+
+  // --- пошук статусу ---
+  var q = document.getElementById('q');
+  var cnt = document.getElementById('cnt');
+  var tbl = document.getElementById('st');
+  if (q && tbl) {
+    var rows = Array.prototype.slice.call(tbl.tBodies[0].rows);
+    var apply = function(){
+      var s = q.value.trim().toLowerCase();
+      var n = 0;
+      rows.forEach(function(r){
+        var hit = !s || r.textContent.toLowerCase().indexOf(s) !== -1;
+        r.hidden = !hit;
+        if (hit) n++;
+      });
+      cnt.textContent = s ? n + ' з ' + rows.length : rows.length + ' статусів';
+    };
+    q.addEventListener('input', apply);
+    apply();
+  }
+
+  // --- підсвітка поточного розділу ---
+  var links = Array.prototype.slice.call(document.querySelectorAll('nav.rail a'));
+  var secs = links.map(function(a){
+    return document.querySelector(a.getAttribute('href'));
+  });
+  if ('IntersectionObserver' in window) {
+    var seen = new Map();
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ seen.set(e.target, e.intersectionRatio); });
+      var best = null, bestR = 0;
+      seen.forEach(function(r, el){ if (r > bestR) { bestR = r; best = el; } });
+      links.forEach(function(a, i){ a.classList.toggle('here', secs[i] === best); });
+    }, { rootMargin: '-10% 0px -70% 0px', threshold: [0, .25, .5, 1] });
+    secs.forEach(function(s){ if (s) io.observe(s); });
+  }
+})();
+</script>

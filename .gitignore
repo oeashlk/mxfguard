@@ -1,0 +1,28 @@
+# --- комплектний рантайм ---
+# ffmpeg.exe і ffprobe.exe — по ~212 МБ кожен, GitHub ріже >100 МБ.
+# Python embeddable — 21 МБ бінарників, які лише дублюють python.org.
+# Обидві теки відновлюються скриптом make-standalone.ps1.
+tools/bin/
+tools/python/
+
+# --- результати роботи ---
+# Маніфести й звіти прив'язані до конкретної машини і прогону.
+audit/
+salvaged/
+*.csv
+report.html
+quarantine-report.html
+
+# --- зібрані архіви ---
+mxfguard-*.zip
+
+# --- python ---
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# --- система ---
+Thumbs.db
+desktop.ini
+.DS_Store
