@@ -58,6 +58,32 @@ from datetime import datetime, timezone
 
 VERSION = "1.0"
 
+
+# ---------------------------------------------------------------------------
+# 0. Комплектний ffmpeg
+# ---------------------------------------------------------------------------
+def _use_bundled_tools() -> None:
+    """
+    Додати комплектний tools/bin у PATH, якщо він поруч зі скриптом.
+
+    Без цього запуск напряму (не через .cmd-обгортку) не бачив би
+    вкладений ffmpeg і мовчки пропускав перевірки struct і decode,
+    видаючи маніфест, який виглядає чистим.
+    """
+    here = os.path.dirname(os.path.abspath(__file__))
+    up = os.path.dirname(here)
+    for cand in (os.path.join(here, "tools", "bin"),
+                 os.path.join(here, "bin"),
+                 os.path.join(up, "tools", "bin"),
+                 os.path.join(up, "bin")):
+        if os.path.isdir(cand):
+            os.environ["PATH"] = cand + os.pathsep + os.environ.get("PATH", "")
+            return
+
+
+_use_bundled_tools()
+
+
 # ---------------------------------------------------------------------------
 # 1. Сигнатури типів файлів
 # ---------------------------------------------------------------------------

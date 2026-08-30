@@ -1,8 +1,17 @@
 @echo off
 chcp 65001 >nul
 setlocal
-cd /d "%~dp0.."
-call "%~dp0_common.cmd" || exit /b 1
+rem UNC-сумісний перехід у теку інструменту. Звичайний "cd /d" на
+rem мережевому шляху падає, cmd мовчки лишається в C:\Windows і бере
+rem системний рантайм замість комплектного. pushd мапить тимчасову
+rem літеру диска і працює однаково локально та з шари.
+pushd "%~dp0.." 2>nul || (
+  echo [X] Не вдалося відкрити теку інструменту: %~dp0..
+  echo     Якщо це мережева шара - скопіюй теку локально.
+  pause
+  exit /b 1
+)
+call tools\_common.cmd || exit /b 1
 
 echo.
 echo ==========================================================
@@ -50,4 +59,5 @@ choice /c YN /n /m "Відкрити звіт зараз? [Y/N] "
 if not errorlevel 2 start "" "%AUDIT%\report.html"
 :abort
 echo.
+popd
 pause

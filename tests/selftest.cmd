@@ -1,8 +1,17 @@
 @echo off
 chcp 65001 >nul
 setlocal
-cd /d "%~dp0"
-call "%~dp0..\tools\_common.cmd" || exit /b 1
+rem UNC-сумісний перехід у теку інструменту. Звичайний "cd /d" на
+rem мережевому шляху падає, cmd мовчки лишається в C:\Windows і бере
+rem системний рантайм замість комплектного. pushd мапить тимчасову
+rem літеру диска і працює однаково локально та з шари.
+pushd "%~dp0.." 2>nul || (
+  echo [X] Не вдалося відкрити теку інструменту: %~dp0..
+  echo     Якщо це мережева шара - скопіюй теку локально.
+  pause
+  exit /b 1
+)
+call tools\_common.cmd || exit /b 1
 echo.
 echo Самоперевірка створює тимчасове дерево з наперед відомими
 echo поломками і звіряє, що інструмент їх ловить. Хвилина часу.
@@ -10,6 +19,7 @@ echo На бойові дані не впливає, після себе при�
 echo.
 echo   Python: %MG_PY%   ffmpeg: %MG_FF%
 echo.
-"%PY%" selftest.py
+"%PY%" tests\selftest.py
 echo.
+popd
 pause

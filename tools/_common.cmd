@@ -3,7 +3,7 @@ rem Спільна частина: підхопити вбудований ра�
 rem інакше системний. Викликається з інших скриптів.
 rem Порядок пріоритету: комплектні bin\ і python\ -> те, що в PATH.
 
-set "MG_ROOT=%~dp0.."
+set "MG_ROOT=%CD%"
 
 rem --- ffmpeg/ffprobe з комплекту ---
 if exist "%MG_ROOT%\tools\bin\ffmpeg.exe" (

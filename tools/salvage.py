@@ -51,10 +51,28 @@ DEMUXERS = [
 ]
 
 
+def _use_bundled_tools() -> None:
+    """
+    Додати комплектний tools/bin у PATH, якщо він поруч зі скриптом.
+    Потрібне для запуску напряму, повз .cmd-обгортку.
+    """
+    here = os.path.dirname(os.path.abspath(__file__))
+    up = os.path.dirname(here)
+    for cand in (os.path.join(here, "bin"),
+                 os.path.join(here, "tools", "bin"),
+                 os.path.join(up, "tools", "bin")):
+        if os.path.isdir(cand):
+            os.environ["PATH"] = cand + os.pathsep + os.environ.get("PATH", "")
+            return
+
+
+_use_bundled_tools()
+
+
 def need(tool: str) -> None:
     if shutil.which(tool) is None:
-        sys.exit(f"[x] {tool} не знайдено в PATH. "
-                 f"Постав ffmpeg: winget install Gyan.FFmpeg")
+        sys.exit(f"[x] {tool} не знайдено ні в комплекті (tools/bin), "
+                 f"ні в PATH.\n    Постав ffmpeg: winget install Gyan.FFmpeg")
 
 
 def cut_tail(src: str, offset: int, dst: str) -> int:
