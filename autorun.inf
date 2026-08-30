@@ -1,0 +1,16 @@
+; mxfguard - autorun descriptor
+; Windows 7 and newer ignore AutoRun *execution* on removable drives.
+; What still works here: the drive icon, the drive label, and the
+; right-click / double-click verb that opens the launcher.
+; Plain ASCII on purpose - this file is read in the system ANSI
+; codepage, so Cyrillic here turns into mojibake on some machines.
+
+[autorun]
+icon=mxfguard.ico
+label=mxfguard toolkit
+action=Open mxfguard
+open=START.cmd
+
+shell\mxfguard=Open &mxfguard
+shell\mxfguard\command=START.cmd
+shell=mxfguard

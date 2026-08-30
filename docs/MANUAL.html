@@ -223,6 +223,7 @@ ol.steps>li::before{
 }
 ol.steps>li>div{min-width:0;flex:1}
 ol.steps b{font-family:var(--f-disp);font-weight:600;font-size:16px}
+ol.steps .hintq{font-family:var(--f-mono);font-size:12px;color:var(--accent);margin-left:6px;white-space:nowrap}
 ol.steps p{margin:3px 0 0;font-size:15.3px;color:var(--ink-2)}
 
 ul.plain{margin:12px 0;padding-left:20px;max-width:66ch}
@@ -326,10 +327,16 @@ certutil -user -store My</pre>
     <p><code>set AUDIT=E:\audit</code>, і в тому ж вікні консолі запускай скрипт. Сама тека інструменту може лишатися read-only.</p>
   </div>
 
+  <div class="note">
+    <span class="lbl">Найкоротший шлях</span>
+    <p><code>START.cmd</code> у корені — меню з усіма фазами, довідкою і перемиканням теки маніфестів. На флешці той самий файл продубльовано як <code>ЗАПУСТИТИ</code>. Далі можна нічого не запам'ятовувати: пункти йдуть у тому ж порядку, що й фази нижче.</p>
+    <p>Автозапуску з флешки не буде — Windows 7 і новіші не виконують програми зі знімних носіїв, і жоден <code>autorun.inf</code> цього не обходить. Відкрий диск і клацни <code>ЗАПУСТИТИ</code>.</p>
+  </div>
+
   <ol class="steps">
-    <li><div><b>tools\0-preflight.cmd</b>
+    <li><div><b>tools\0-preflight.cmd</b> <span class="hintq">(пункт 0 в меню)</span>
       <p>Показує, що саме буде використано. У повній збірці має написати «з комплекту» біля Python і ffmpeg і жодного <code>[X]</code>. У легкій збірці — перевіряє системні і, якщо треба, ставить xxhash із теки <code>vendor\</code> без інтернету.</p></div></li>
-    <li><div><b>tests\selftest.cmd</b>
+    <li><div><b>tests\selftest.cmd</b> <span class="hintq">(пункт 9 в меню)</span>
       <p>Створює тимчасове дерево з наперед відомими поломками і звіряє, що інструмент їх ловить. Хвилина. На бойові дані не впливає, після себе прибирає.</p></div></li>
     <li><div><b>Прочитати вивід самоперевірки</b>
       <p>Має бути <code>УСІ ПЕРЕВІРКИ ПРОЙДЕНО</code>. Якщо ні — не запускай на бойових даних, поки не з'ясовано чому.</p></div></li>
@@ -360,15 +367,15 @@ certutil -user -store My</pre>
   <p>Скрипти пронумеровані в порядку запуску. Порядок має значення: маніфест джерела неможливо зробити заднім числом, після того як джерело вже переформатували.</p>
 
   <ol class="steps">
-    <li><div><b>1-scan-source.cmd — маніфест джерела</b>
+    <li><div><b>1-scan-source.cmd — маніфест джерела</b> <span class="hintq">(пункт 1 в меню)</span>
       <p>Знімок «як було», до копіювання. Це єдина точка відліку, з якою потім є що звіряти. Питає шлях до джерела, рахує хеш, сигнатури й ентропію.</p></div></li>
     <li><div><b>Копіювання — робиш своїм інструментом</b>
       <p>mxfguard у цьому не бере участі. Важливо лише знати, що саме твій копіювальник перевіряє (таблиця нижче).</p></div></li>
-    <li><div><b>2-scan-dest.cmd — маніфест приймача</b>
+    <li><div><b>2-scan-dest.cmd — маніфест приймача</b> <span class="hintq">(пункт 2 в меню)</span>
       <p>Швидкий прохід, тільки хеші. Відповідає на одне питання: чи те саме доїхало.</p></div></li>
-    <li><div><b>3-compare-report.cmd — звірка і звіт</b>
+    <li><div><b>3-compare-report.cmd — звірка і звіт</b> <span class="hintq">(пункт 3 в меню)</span>
       <p>Порівнює два маніфести й збирає HTML-звіт. Якщо скаже, що розбіжностей немає — перенос чистий. Це ще не означає, що файли цілі.</p></div></li>
-    <li><div><b>4-deep-validate.cmd — контентна валідація</b>
+    <li><div><b>4-deep-validate.cmd — контентна валідація</b> <span class="hintq">(пункт 4 в меню)</span>
       <p>Дивиться всередину файлів. Довго: на десятки ТБ — ніч і більше. <kbd>Ctrl+C</kbd> безпечний, повторний запуск продовжить з місця зупинки. Після нього запусти <code>3-compare-report.cmd</code> ще раз — він підхопить повний маніфест.</p></div></li>
   </ol>
 
@@ -447,9 +454,9 @@ certutil -user -store My</pre>
   <p>Режим <code>--ransomware</code> шукає в голові файлу перший неушкоджений MXF Partition Pack — 13-байтовий ключ, спільний для Header, Body, Footer і Random Index Pack. Якщо він знайшовся на зсуві 7,2 МБ, значить зашифровані лише перші мегабайти, і есенцію за цим зсувом можна діставати.</p>
 
   <ol class="steps">
-    <li><div><b>5-ransomware-triage.cmd</b>
+    <li><div><b>5-ransomware-triage.cmd</b> <span class="hintq">(пункт 5 в меню)</span>
       <p>Сканує карантин, рахує sha256 (придатний для акту) і збирає окремий звіт. Дивись стовпець <code>salvage_offset</code>.</p></div></li>
-    <li><div><b>salvage-mxf.cmd</b>
+    <li><div><b>salvage-mxf.cmd</b> <span class="hintq">(пункт 6 в меню)</span>
       <p>Бере всі файли зі знайденим зсувом, вирізає хвіст і підбирає демуксер. Джерело не змінюється, результат пишеться в окрему теку.</p></div></li>
     <li><div><b>Відкрити *.preview.png і подивитись очима</b>
       <p>Обов'язково. Інструмент не відрізняє реальний сюжет від кольорового шуму — це може зробити тільки людина.</p></div></li>

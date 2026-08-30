@@ -7,12 +7,14 @@
 *.bat    text eol=crlf
 *.ps1    text eol=crlf
 *.txt    text eol=crlf
+*.inf    text eol=crlf
 
 *.py     text eol=lf
 *.md     text eol=lf
 *.html   text eol=lf
 
 *.whl    binary
+*.ico    binary
 *.exe    binary
 *.pyd    binary
 *.dll    binary
